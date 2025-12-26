@@ -45,8 +45,6 @@ class JGOLPeerCharm(ops.CharmBase):
             if self.unit.name not in neighbours:
                 self.unit.status = ops.ActiveStatus("unused")
                 return
-            Path("leader.txt").write_text(world.data[self.app]["leader"])
-            Path("neighbours.txt").write_text(" ".join(neighbours[self.unit.name]))
             own_index = list(neighbours).index(self.unit.name)
             init_live = int(init[own_index])
 
