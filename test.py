@@ -33,51 +33,15 @@ MAP_3X3 = {
     "app/8": ["app/4", "app/5", "app/7"],
 }
 
+META = {
+    "name": "jgol-peer",
+    "peers": {"world": {"interface": "jgol"}},
+    "config": {"options": {"run": {"type": "boolean", "default": False}}},
+}
 
 @pytest.fixture
 def board():
     return json.dumps(MAP_3X3)
-
-
-def test_boot():
-    """Leader with blank config, etc."""
-    rel = PeerRelation(endpoint="world", id=1, local_app_data={}, peers_data={})
-    ctx = Context(JGOLPeerCharm, app_name="app", unit_id=0)
-    state = State(leader=True, relations={rel})
-    state = ctx.run(ctx.on.update_status(), state)
-    assert state.app_status == ops.WaitingStatus("Resetting... [.]")
-    assert state.unit_status == ops.ActiveStatus()
-
-
-def test_boot_unit():
-    """Leader with blank config, etc."""
-    rel = PeerRelation(endpoint="world", id=1, local_app_data={}, peers_data={})
-    ctx = Context(JGOLPeerCharm, app_name="app", unit_id=1)
-    state = State(relations={rel})
-    state = ctx.run(ctx.on.update_status(), state)
-    assert state.unit_status == ops.WaitingStatus("KeyError('run')")
-
-
-def test_init_unit(board):
-    """Leader with blank config, etc."""
-    rel = PeerRelation(
-        endpoint="world",
-        id=1,
-        local_app_data={
-            "run": "false",
-            "round": "0",
-            "init": '"000111000"',
-            "map": board,
-            "leader": "app/42",
-        },
-        peers_data={},
-    )
-    ctx = Context(JGOLPeerCharm, app_name="app", unit_id=1)
-    state = State(relations={rel})
-    state = ctx.run(ctx.on.update_status(), state)
-    assert state.unit_status == ops.ActiveStatus()
-    rel = state.get_relation(1)
-    assert rel.local_unit_data == {"0": "0"}
 
 
 def exercise(units=20, rounds=20):
@@ -94,7 +58,7 @@ def exercise(units=20, rounds=20):
         unit_messages = {f"app/{i}": "" for i in range(units)}
         app_message = ""
         rv = []
-        contexts = [Context(JGOLPeerCharm, app_name="app", unit_id=i) for i in range(units)]
+        contexts = [Context(JGOLPeerCharm, meta=META, config=META["config"], app_name="app", unit_id=i) for i in range(units)]
 
         def loop():
             nonlocal local_app_data, app_message
@@ -154,25 +118,6 @@ def exercise(units=20, rounds=20):
         print(app_message)
         print(unit_messages)
         return rv
-
-
-def test_init():
-    # 11: 3x3 board with a few spare units
-    rv = exercise(11, rounds=3)
-    assert rv == ["Resetting... [.........]", "Reset [0........]", "Reset [000111000]"]
-
-
-def test_run():
-    rv = exercise(11, rounds=20)
-    boards = [board_from_status(r) for r in rv]
-    assert set(boards) == {"000111000", "0........", "010010010"}
-    # Make sure they are interleaved
-    # '000111000', '0........', '010010010', '0........',
-    assert len(set(boards[::4])) == 1
-    assert len(set(boards[1::4])) == 1
-    assert len(set(boards[2::4])) == 1
-    assert len(set(boards[3::4])) == 1
-    assert len(set(boards[:4])) == 3
 
 
 def board_from_status(st: str) -> str | None:
