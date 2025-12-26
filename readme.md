@@ -18,10 +18,10 @@ Note that the latest "ops" cannot be used because of an internal change where so
 
 
 ### Tested on macOS
-hardware: m2 aarch64
-cpython-3.15.0a2+freethreaded (astral standalone)
-cpython-3.15.0a1+freethreaded (astral standalone)
-cpython-3.15.0a3 (downloaded from python.org)
+- hardware: m2 aarch64
+- cpython-3.15.0a2+freethreaded (astral standalone)
+- cpython-3.15.0a1+freethreaded (astral standalone)
+- cpython-3.15.0a3 (downloaded from python.org)
 
 Two symptoms are observed, possibly the same crash:
 
@@ -46,8 +46,8 @@ I hazard a guess that SIGBUS and SIGSEGV are probably the same issue.
 
 
 ### Tested on Linux
-hardware: AMD amd64
-cpython-3.15.0a2+freethreaded-linux-x86_64-gnu
+- hardware: AMD amd64
+- cpython-3.15.0a2+freethreaded-linux-x86_64-gnu
 
 ```
 Resetting... [....................................................................................................]
