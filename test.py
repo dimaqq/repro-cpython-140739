@@ -8,7 +8,6 @@ from typing import cast, Mapping, NewType, cast
 
 import ops
 import ops.testing
-import pytest
 from ops.testing import Context, PeerRelation, State
 
 INIT = "0001110001010101111110001110010101010101001010101000111101010111" * 99
@@ -213,10 +212,6 @@ META = {
     "peers": {"world": {"interface": "jgol"}},
     "config": {"options": {"run": {"type": "boolean", "default": False}}},
 }
-
-@pytest.fixture
-def board():
-    return json.dumps(MAP_3X3)
 
 
 def exercise(units=20, rounds=20):
